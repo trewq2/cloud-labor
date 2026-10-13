@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cloud Native Labor – felhő, konténerek, Docker, Kubernetes</title>
+<meta name="description" content="13. évfolyam – Szerverek és felhőszolgáltatások – Cloud Native gyakorlati labor">
+<link rel="stylesheet" href="styles.css">
+<script defer src="script.js"></script>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Szerverek és felhőszolgáltatások • 13. évfolyam</div>
+      <h1>Cloud Native Labor</h1>
+      <p class="hero-sub">Felhő • konténerek • Docker • Compose • registry • Kubernetes • CI/CD</p>
+      <p class="lead">6 × 45 perces, egymásra épülő gyakorlati projekt. Minden modul rövid elméletből, végrehajtandó feladatból, ellenőrzésből és képernyőképes bizonyítékból áll.</p>
+      <div class="hero-buttons">
+        <a class="btn primary" href="#modulok">Labor indítása</a>
+        <a class="btn secondary" href="downloads/cloudlab_starter.zip" download>Starter csomag</a>
+        <button class="btn ghost" id="printBtn">Nyomtatás / PDF</button>
+      </div>
+    </div>
+    <aside class="status-card">
+      <label>Név<input id="studentName" placeholder="Vezetéknév Keresztnév"></label>
+      <label>Osztály<input id="studentClass" placeholder="pl. 13.A"></label>
+      <div class="progress-label"><span>Haladás</span><strong id="progressLabel">0%</strong></div>
+      <div class="progress"><div id="progressBar"></div></div>
+      <div id="moduleCount">0 / 6 modul kész</div>
+      <button id="resetProgress" class="tiny">Haladás törlése</button>
+    </aside>
+  </div>
+</header>
+
+<nav class="topnav"><div class="wrap nav-scroll">
+  <a href="#attekintes">Áttekintés</a>
+  <a href="#modulok">Modulok</a>
+  <a href="#zaro">Záró kihívás</a>
+  <a href="#teszt">Önellenőrzés</a>
+  <a href="#beadas">Beadás</a>
+</div></nav>
+
+<main class="wrap">
+<section id="attekintes" class="section">
+  <div class="section-head"><span class="section-no">00</span><div><div class="kicker">Projekt</div><h2>Mit fogsz felépíteni?</h2></div></div>
+  <div class="project-grid">
+    <div class="card">
+      <h3>CloudLab alkalmazás</h3>
+      <p>Egy Python/Flask webalkalmazást konténerizálsz, többkonténeres környezetben futtatsz, registrybe töltesz, majd Kubernetes klaszteren üzemeltetsz.</p>
+      <ul class="ticks">
+        <li>GitHub Codespaces felhő IDE</li><li>Docker image és container</li><li>portok, logok, volume</li>
+        <li>Docker Compose + Redis</li><li>Docker Hub registry</li><li>Kubernetes Deployment + Service</li>
+        <li>skálázás, self-healing, rollout</li><li>GitHub Actions CI</li><li>Cloudflare Pages</li>
+      </ul>
+    </div>
+    <div class="card architecture">
+      <h3>Cloud Native folyamat</h3>
+      <div class="arch-row"><span>GitHub / Codespaces</span><b>→</b><span>forráskód</span></div>
+      <div class="arch-row"><span>Docker build</span><b>→</b><span>image</span></div>
+      <div class="arch-row"><span>image</span><b>→</b><span>Docker Hub</span></div>
+      <div class="arch-row"><span>Docker Hub</span><b>→</b><span>Kubernetes</span></div>
+      <div class="arch-row"><span>git push</span><b>→</b><span>GitHub Actions</span></div>
+      <div class="arch-row"><span>Git repository</span><b>→</b><span>Cloudflare Pages</span></div>
+    </div>
+  </div>
+  <div class="service-grid">
+    <div class="service"><strong>GitHub Codespaces</strong><span>felhőalapú fejlesztői környezet</span></div>
+    <div class="service"><strong>Docker Hub</strong><span>konténer registry</span></div>
+    <div class="service"><strong>Killercoda</strong><span>böngészős Kubernetes labor</span></div>
+    <div class="service"><strong>Cloudflare Pages</strong><span>felhőalapú statikus webhosting</span></div>
+  </div>
+  <div class="notice"><strong>Megjegyzés:</strong> a külső szolgáltatások ingyenes keretei változhatnak. A Docker-részek helyi Docker Desktop környezetben is elvégezhetők.</div>
+</section>
+
+<section class="section">
+  <div class="section-head"><span class="section-no">01</span><div><div class="kicker">Alapfogalmak</div><h2>Felhőből Cloud Native</h2></div></div>
+  <div class="learn-grid">
+    <details open class="learn"><summary>Virtuális gép vagy konténer?</summary><p>A VM teljes vendég operációs rendszert futtat. A konténer a host kernelét használja, ezért kisebb és gyorsabban indul.</p></details>
+    <details class="learn"><summary>Image vagy container?</summary><p>Az image sablon. A container az image futó példánya. Ugyanabból az image-ből több izolált példány indítható.</p></details>
+    <details class="learn"><summary>Miért registry?</summary><p>A registry központi image-tároló. Az elkészített image más gépen vagy Kubernetes klaszteren is letölthető.</p></details>
+    <details class="learn"><summary>Miért Kubernetes?</summary><p>Automatizálja a konténerek telepítését, skálázását, újraindítását és frissítését, és kívánt állapotot tart fenn.</p></details>
+  </div>
+</section>
+
+<section id="modulok" class="section">
+  <div class="section-head"><span class="section-no">02</span><div><div class="kicker">Gyakorlati labor</div><h2>6 egymásra épülő modul</h2></div></div>
+
+  <article class="module" data-module="1">
+    <div class="module-head"><label class="module-check"><input type="checkbox"><span></span></label><div><div class="module-meta">1. modul • 45 perc</div><h3>GitHub Codespaces – fejlesztés a felhőben</h3></div></div>
+    <div class="concept"><strong>Tanulási cél:</strong> távoli Linux fejlesztői környezet létrehozása és webalkalmazás futtatása felhőben.</div>
+    <ol class="tasks">
+      <li>Hozz létre <code>cloud-native-labor</code> nevű GitHub repositoryt.</li>
+      <li>Töltsd fel a starter ZIP kicsomagolt tartalmát.</li>
+      <li>Indíts Codespace-t: <strong>Code → Codespaces → Create codespace on main</strong>.</li>
+      <li>Ellenőrizd a környezetet:</li>
+    </ol>
+    <div class="cmd" data-copy><code>uname -a
+python --version
+git --version
+docker --version
+kubectl version --client</code><button>Másolás</button></div>
+    <p>Indítsd el az alkalmazást és nyisd meg a 8080-as port előnézetét:</p>
+    <div class="cmd" data-copy><code>pip install -r requirements.txt
+python app.py</code><button>Másolás</button></div>
+    <div class="checkpoint"><b>Ellenőrzés:</b> a <code>/health</code> végpont <code>{"status":"ok"}</code> választ ad.</div>
+    <div class="evidence"><strong>Bizonyíték 01–02:</strong> terminál a verziókkal; működő CloudLab oldal Codespaces port-előnézetben.</div>
+    <div class="question"><b>Gondolkodj:</b> mi fut a saját gépeden és mi a GitHub infrastruktúráján?</div>
+  </article>
+
+  <article class="module" data-module="2">
+    <div class="module-head"><label class="module-check"><input type="checkbox"><span></span></label><div><div class="module-meta">2. modul • 45 perc</div><h3>Docker alapok – image, container, port, log, lifecycle</h3></div></div>
+    <div class="concept"><strong>Tanulási cél:</strong> container indítása, porttovábbítás, naplózás, leállítás és törlés.</div>
+    <div class="cmd" data-copy><code>docker pull nginx:alpine
+docker image ls
+docker run -d --name web1 -p 8081:80 nginx:alpine
+docker ps
+docker logs web1
+curl http://127.0.0.1:8081
+docker stop web1
+docker rm web1</code><button>Másolás</button></div>
+    <div class="challenge"><strong>Mini kihívás:</strong> indíts két Nginx konténert <code>web-a</code> és <code>web-b</code> néven két külön host porton.</div>
+    <div class="checkpoint"><b>Ellenőrzés:</b> a <code>docker ps</code> egyszerre két futó konténert mutat külön PORTS értékkel.</div>
+    <div class="evidence"><strong>Bizonyíték 03–04:</strong> image lista; két egyszerre futó konténer.</div>
+  </article>
+
+  <article class="module" data-module="3">
+    <div class="module-head"><label class="module-check"><input type="checkbox"><span></span></label><div><div class="module-meta">3. modul • 45 perc</div><h3>Dockerfile, Compose, volume és Docker Hub</h3></div></div>
+    <div class="concept"><strong>Tanulási cél:</strong> saját image és többkonténeres alkalmazás készítése, tartós adattal.</div>
+    <div class="cmd" data-copy><code>docker build -t cloudlab:1.0 .
+docker image ls
+docker run -d --name cloudlab -p 8080:8080 cloudlab:1.0
+curl http://127.0.0.1:8080/health</code><button>Másolás</button></div>
+    <p>Compose: webalkalmazás + Redis.</p>
+    <div class="cmd" data-copy><code>docker rm -f cloudlab
+docker compose up -d --build
+docker compose ps
+docker compose logs --tail=30
+curl http://127.0.0.1:8080/api/info</code><button>Másolás</button></div>
+    <p>Frissítsd többször az oldalt. A számláló növekedjen. Ezután teszteld a volume tartósságát:</p>
+    <div class="cmd" data-copy><code>docker compose down
+docker compose up -d
+docker volume ls</code><button>Másolás</button></div>
+    <p>Docker Hub:</p>
+    <div class="cmd" data-copy><code>docker login
+docker tag cloudlab:1.0 SAJAT_DOCKERHUB_NEV/cloudlab:1.0
+docker push SAJAT_DOCKERHUB_NEV/cloudlab:1.0</code><button>Másolás</button></div>
+    <div class="evidence"><strong>Bizonyíték 05–07:</strong> saját image; működő Compose két szolgáltatással; Docker Hub 1.0 tag.</div>
+  </article>
+
+  <article class="module" data-module="4">
+    <div class="module-head"><label class="module-check"><input type="checkbox"><span></span></label><div><div class="module-meta">4. modul • 45 perc</div><h3>Kubernetes alapok – Deployment és Service</h3></div></div>
+    <div class="concept"><strong>Környezet:</strong> Killercoda Kubernetes labor vagy tanári klaszter.</div>
+    <p>A <code>k8s.yaml</code> fájlban cseréld ki a <code>DOCKERHUB_FELHASZNALO</code> részt.</p>
+    <div class="cmd" data-copy><code>kubectl apply -f k8s.yaml
+kubectl get deployments
+kubectl get pods -o wide
+kubectl get services
+kubectl describe deployment cloudlab</code><button>Másolás</button></div>
+    <p>Port-forward:</p>
+    <div class="cmd" data-copy><code>kubectl port-forward service/cloudlab 8080:80</code><button>Másolás</button></div>
+    <div class="checkpoint"><b>Ellenőrzés:</b> 2 Running pod + cloudlab Service + működő <code>/health</code>.</div>
+    <div class="evidence"><strong>Bizonyíték 08–09:</strong> podlista; Kubernetesből elérhető alkalmazás.</div>
+  </article>
+
+  <article class="module" data-module="5">
+    <div class="module-head"><label class="module-check"><input type="checkbox"><span></span></label><div><div class="module-meta">5. modul • 45 perc</div><h3>Kubernetes üzemeltetés – skálázás, self-healing, rollout</h3></div></div>
+    <div class="concept"><strong>Tanulási cél:</strong> megtapasztalni a Kubernetes kívántállapot-kezelését.</div>
+    <div class="cmd" data-copy><code>kubectl scale deployment cloudlab --replicas=4
+kubectl get pods -w</code><button>Másolás</button></div>
+    <p>Törölj egy podot és figyeld az automatikus pótlást:</p>
+    <div class="cmd" data-copy><code>kubectl get pods
+kubectl delete pod POD_NEVE
+kubectl get pods -w</code><button>Másolás</button></div>
+    <p>Rollout ellenőrzés:</p>
+    <div class="cmd" data-copy><code>kubectl set image deployment/cloudlab cloudlab=SAJAT_DOCKERHUB_NEV/cloudlab:1.0
+kubectl rollout status deployment/cloudlab
+kubectl rollout history deployment/cloudlab</code><button>Másolás</button></div>
+    <div class="challenge"><strong>Hibakeresés:</strong> hibás podnál használd a <code>kubectl describe pod</code> és <code>kubectl logs</code> parancsokat.</div>
+    <div class="evidence"><strong>Bizonyíték 10–12:</strong> 4 replica; self-healing; rollout státusz.</div>
+  </article>
+
+  <article class="module" data-module="6">
+    <div class="module-head"><label class="module-check"><input type="checkbox"><span></span></label><div><div class="module-meta">6. modul • 45 perc</div><h3>CI/CD – GitHub Actions és Cloudflare Pages</h3></div></div>
+    <div class="concept"><strong>Tanulási cél:</strong> automatikus build/health-check és Git-alapú felhős publikálás.</div>
+    <p>A starterben lévő workflow push után Docker image-et buildel, konténert indít és health-checket futtat.</p>
+    <div class="cmd" data-copy><code>git add .
+git commit -m "CloudLab CI teszt"
+git push</code><button>Másolás</button></div>
+    <p>GitHubon az <strong>Actions</strong> fülön ellenőrizd a sikeres futást.</p>
+    <div class="challenge"><strong>Második felhőszolgáltató:</strong> Cloudflare Pages-ben kapcsold össze a repositoryt, és publikálj egy <code>status.html</code> oldalt a neveddel, GitHub és Docker Hub linkkel.</div>
+    <div class="evidence"><strong>Bizonyíték 13–15:</strong> sikeres Actions futás; Cloudflare Pages deployment; publikus status oldal.</div>
+  </article>
+</section>
+
+<section id="zaro" class="section">
+  <div class="section-head"><span class="section-no">03</span><div><div class="kicker">Komplex feladat</div><h2>Záró CloudOps kihívás</h2></div></div>
+  <div class="final-card">
+    <h3>„Új kiadás” szimuláció</h3>
+    <ol>
+      <li>Módosítsd az alkalmazás verzióját <code>2.0</code>-ra.</li>
+      <li>Buildelj <code>cloudlab:2.0</code> image-et és pushold Docker Hubra.</li>
+      <li>Kubernetesben frissíts 2.0-ra.</li>
+      <li>Ellenőrizd a rolloutot és az <code>/api/info</code> választ.</li>
+      <li>Skálázd 3 replikára.</li>
+      <li>Törölj egy podot, dokumentáld a self-healinget.</li>
+      <li>Ellenőrizd a GitHub Actions workflow-t.</li>
+    </ol>
+    <div class="evidence"><strong>Bizonyíték 16–18:</strong> Docker Hub 2.0 tag; Kubernetes 2.0 rollout; self-healing után 3 Running pod.</div>
+  </div>
+</section>
+
+<section id="teszt" class="section">
+  <div class="section-head"><span class="section-no">04</span><div><div class="kicker">Önellenőrzés</div><h2>12 kérdéses mini teszt</h2></div></div>
+  <div id="quiz"></div>
+  <button id="gradeQuiz" class="btn quiz-btn">Teszt kiértékelése</button>
+  <div id="quizResult"></div>
+</section>
+
+<section id="beadas" class="section">
+  <div class="section-head"><span class="section-no">05</span><div><div class="kicker">Dokumentáció</div><h2>Beadás és értékelés</h2></div></div>
+  <div class="submit-grid">
+    <div class="card"><h3>Kötelező bizonyítékok</h3><div id="evidenceChecklist"></div></div>
+    <div class="card"><h3>Leadandó</h3>
+      <ul class="ticks"><li>GitHub repository URL</li><li>Docker Hub repository URL</li><li>Cloudflare Pages URL</li><li>18 képernyőkép PDF/DOCX-ben</li><li>8–10 mondatos üzemeltetési összefoglaló</li></ul>
+      <p><strong>Fájlnév:</strong></p>
+      <div class="cmd compact" data-copy><code>Vezeteknev_Keresztnev_CloudNative.pdf</code><button>Másolás</button></div>
+    </div>
+  </div>
+  <div class="score-table"><table><thead><tr><th>Terület</th><th>Pont</th></tr></thead><tbody>
+    <tr><td>Codespaces / felhő IDE</td><td>10</td></tr><tr><td>Docker alapok</td><td>15</td></tr>
+    <tr><td>Dockerfile + Compose + volume</td><td>20</td></tr><tr><td>Docker Hub / registry</td><td>10</td></tr>
+    <tr><td>Kubernetes telepítés</td><td>15</td></tr><tr><td>Kubernetes üzemeltetés</td><td>15</td></tr>
+    <tr><td>GitHub Actions + Cloudflare Pages</td><td>10</td></tr><tr><td>Dokumentáció</td><td>5</td></tr>
+    <tr class="total"><td>Összesen</td><td>100</td></tr></tbody></table></div>
+</section>
+
+<section class="resources">
+  <h2>Hasznos hivatalos források</h2>
+  <div class="resource-grid">
+    <a href="https://docs.github.com/en/codespaces" target="_blank" rel="noopener">GitHub Codespaces</a>
+    <a href="https://docs.docker.com/" target="_blank" rel="noopener">Docker Docs</a>
+    <a href="https://kubernetes.io/docs/" target="_blank" rel="noopener">Kubernetes Docs</a>
+    <a href="https://killercoda.com/" target="_blank" rel="noopener">Killercoda</a>
+    <a href="https://developers.cloudflare.com/pages/" target="_blank" rel="noopener">Cloudflare Pages</a>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Cloud Native Labor • Szerverek és felhőszolgáltatások • oktatói gyakorlati weboldal</div></footer>
+</body>
+</html>
