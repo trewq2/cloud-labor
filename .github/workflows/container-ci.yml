@@ -1,0 +1,22 @@
+name: Container CI
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Docker image build
+        run: docker build -t cloudlab:${{ github.sha }} .
+      - name: Konténer indítása
+        run: |
+          docker run -d --name cloudlab-ci -p 8080:8080 cloudlab:${{ github.sha }}
+          sleep 3
+      - name: Health check
+        run: curl --fail http://127.0.0.1:8080/health
+      - name: Cleanup
+        if: always()
+        run: docker rm -f cloudlab-ci || true
