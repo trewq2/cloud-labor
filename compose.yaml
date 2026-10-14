@@ -1,28 +1,49 @@
 services:
+
   redis:
     image: redis:7-alpine
-    command: ["redis-server", "--appendonly", "yes"]
+    container_name: cloudlab-redis
+
+    network_mode: "host"
+
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --bind
+      - "127.0.0.1"
+      - --protected-mode
+      - "no"
+
     volumes:
       - redis-data:/data
+
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "redis-cli -h 127.0.0.1 ping | grep PONG"]
       interval: 2s
       timeout: 2s
       retries: 15
       start_period: 2s
+
     restart: unless-stopped
+
 
   web:
     build: .
-    ports:
-      - "8080:8080"
+    container_name: cloudlab-web
+
+    network_mode: "host"
+
     environment:
       APP_VERSION: "compose-1.0"
-      REDIS_HOST: "redis"
+      REDIS_HOST: "127.0.0.1"
+
     depends_on:
       redis:
         condition: service_healthy
+
     restart: unless-stopped
+
 
 volumes:
   redis-data:
